@@ -105,6 +105,15 @@ def get_tournaments(token=Header(None)):
     check_role(token, ALL_ROLES)
     return function.get_tournaments()
 
+# E7
+@app.post("/teams")
+def create_team(team: TeamCreate, token=Header(None)):
+    user = check_role(token, ["user"])
+    result = function.create_team(team.name, team.match_id, user["user_id"])
+    if result == "match_not_found":
+        raise HTTPException(status_code=404, detail="Match not found")
+    return result
+
 =======
 # E1
 @app.post("/organizers")

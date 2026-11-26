@@ -124,6 +124,47 @@ def get_team_points(session, team):
             total = total + stats.points
     return total
 
+# E6
+def get_tournaments():
+    session = Session(engine)
+    response = []
+    tournaments = session.query(Tournament).all()
+    for t in tournaments:
+        matches = session.query(Match).filter_by(tournament_id=t.id).all()
+        match_list = []
+        for m in matches:
+            match_list.append({
+                "id": m.id,
+                "team1": m.team1,
+                "team2": m.team2,
+                "start_time": str(m.start_time)
+            })
+        response.append({
+            "id": t.id,
+            "name": t.name,
+            "season": t.season,
+            "matches": match_list
+        })
+    session.close()
+    return response
+
+
+# E7
+def create_team(name, match_id, user_id):
+    session = Session(engine)
+    match = session.get(Match, match_id)
+    if match is None:
+        session.close()
+        return "match_not_found"
+    team = FantasyTeam(name=name, match_id=match_id, user_id=user_id)
+    session.add(team)
+    session.commit()
+    session.refresh(team)
+    response = {"message": "Team created successfully", "team_id": team.id}
+    session.close()
+    return response
+
+
 <<<<<<< HEAD
 =======
 
