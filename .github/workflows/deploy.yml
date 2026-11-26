@@ -1,4 +1,3 @@
-
 name: CI/CD
 
 on:
@@ -9,51 +8,30 @@ on:
 jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
-
     env:
-      IMAGE: adibhasan2432/ipl-17
+      # Docker Hub image name in the form <dockerhub-username>/<repo-name>, e.g. malnadhudga/todo-list.
+      # The username comes from the DOCKERHUB_USERNAME secret; change "todo-list" to your own repo name.
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ipl
       VERSION: v${{ github.run_number }}
-
     steps:
+      - uses: actions/checkout@v4
 
-      # 1. Checkout GitHub repository
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # 2. Verify Docker Hub secrets
-      - name: Check Docker Hub Secrets
-        shell: bash
-        env:
-          DH_USER: ${{ secrets.DOCKERHUB_USERNAME }}
-          DH_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        run: |
-          test -n "$DH_USER" || (echo "Username missing" && exit 1)
-          test -n "$DH_TOKEN" || (echo "Token missing" && exit 1)
-          echo "Docker Hub secrets configured"
-
-      # 3. Login to Docker Hub
-      - name: Login to Docker Hub
+      - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 4. Setup Docker Buildx
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 5. Build and push Docker image
-      - name: Build and Push Image
+      - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: ./backend
-          file: ./backend/dockerfile
+          context: .
+          file: dockerfile
           push: true
           tags: |
-            adibhasan2432/ipl-17:latest
-            adibhasan2432/ipl-17:${{ env.VERSION }}
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ env.VERSION }}
 
-      # 6. Deploy to EC2
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
@@ -62,26 +40,10 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-
-            # Start Docker
             sudo systemctl enable --now docker
-
-            # Create data directory
-            mkdir -p $HOME/ipl-data
-
-            # Pull new image
-            sudo docker pull adibhasan2432/ipl-17:${{ env.VERSION }}
-
-            # Remove old container
-            sudo docker rm -f ipl-container || true
-
-            # Run new container
-            sudo docker run -d \
-              --name ipl-container \
-              --restart unless-stopped \
-              -p 8000:8000 \
-              -v $HOME/ipl-data:/app/data \
-              adibhasan2432/ipl-17:${{ env.VERSION }}
-
-            # Verify deployment
-            sudo docker ps --filter name=ipl-container
+            sudo usermod -aG docker $USER
+            sudo docker pull ${{ env.IMAGE }}:${{ env.VERSION }}
+            sudo docker rm -f ipl || true
+            sudo docker run -d --name ipl--restart unless-stopped -p 8000:8000 ${{ env.IMAGE }}:${{ env.VERSION }}
+            sudo docker image prune -af
+            sudo docker ps --filter name=ipl
