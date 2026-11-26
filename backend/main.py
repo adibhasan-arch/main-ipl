@@ -104,3 +104,13 @@ def create_organizer(user: UserIn, token=Header(None)):
     if function.create_organizer(user.username, user.password):
         return {"message": "Organizer created successfully"}
     raise HTTPException(status_code=400, detail="User already exists")
+
+
+
+# E2
+@app.post("/players")
+def add_player(player: PlayerCreate, token=Header(None)):
+    check_role(token, ["organizer"])
+    if player.role not in PLAYER_ROLES:
+        raise HTTPException(status_code=400, detail="role must be batsman, bowler, all-rounder or wicketkeeper")
+    return function.add_player(player.name, player.role, player.team, player.base_points)

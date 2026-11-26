@@ -190,3 +190,15 @@ register_User(username="admin", password="admin123", user_type="admin")
 def create_organizer(username, password):
     return register_User(username=username, password=password, user_type="organizer")
 
+
+# E2
+def add_player(name, role, team, base_points):
+    session = Session(engine)
+    player = Player(name=name, role=role, team=team, base_points=base_points)
+    session.add(player)
+    session.commit()
+    session.refresh(player)
+    response = player_details(player)
+    session.close()
+    return response
+
