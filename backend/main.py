@@ -1,3 +1,4 @@
+
 from fastapi import FastAPI, HTTPException, Header, Body
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -87,7 +88,7 @@ def login(username=Body(), password=Body()):
     return token
 
 
-# A5
+# A3
 @app.post("/auth/refresh")
 def refresh_token(refresh_token=Header(None)):
     payload = function.verify_token(token=refresh_token, token_type="refresh")
@@ -95,4 +96,11 @@ def refresh_token(refresh_token=Header(None)):
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     access_token = function.create_token(user_id=payload["user_id"], token_type="access", user_type=payload["user_type"])
     return {"access_token": access_token}
+
+
+# E6
+@app.get("/tournaments")
+def get_tournaments(token=Header(None)):
+    check_role(token, ALL_ROLES)
+    return function.get_tournaments()
 
