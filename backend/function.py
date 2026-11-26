@@ -124,7 +124,7 @@ def get_team_points(session, team):
     return total
 
 
-#----------Tokens-----------
+#Tokens
 
 def verify_login(username, password):
     session = Session(engine)
@@ -169,7 +169,7 @@ def verify_token(token, token_type):
     return False
 
 
-# --------Users-------------
+# Users
 def register_User(username, password, user_type="user"):
     session = Session(engine)
     user_exists = session.query(User).filter_by(username=username).first()
@@ -181,8 +181,6 @@ def register_User(username, password, user_type="user"):
     session.close()
     return True
 
-
-# create one admin the first time the app runs (only admin can create organizers)
 register_User(username="admin", password="admin123", user_type="admin")
 
 
@@ -220,5 +218,23 @@ def get_player(player_id):
         session.close()
         return None
     response = player_details(player)
+    session.close()
+    return response
+
+
+# E5
+def create_tournament(name, season, matches):
+    session = Session(engine)
+    tournament = Tournament(name=name, season=season)
+    session.add(tournament)
+    session.commit()
+    session.refresh(tournament)
+
+    for m in matches:
+        match = Match(tournament_id=tournament.id, team1=m.team1, team2=m.team2, start_time=m.start_time)
+        session.add(match)
+    session.commit()
+
+    response = {"message": "Tournament created successfully", "tournament_id": tournament.id}
     session.close()
     return response

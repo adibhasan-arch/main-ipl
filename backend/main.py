@@ -130,3 +130,12 @@ def get_player(player_id: int, token=Header(None)):
     if response is None:
         raise HTTPException(status_code=404, detail="Player not found")
     return response
+
+
+
+# E5
+@app.post("/tournaments")
+def create_tournament(tournament: TournamentCreate, token=Header(None)):
+    check_role(token, ["organizer"])
+    return function.create_tournament(tournament.name, tournament.season, tournament.matches)
+
