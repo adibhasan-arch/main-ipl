@@ -210,3 +210,15 @@ def get_players():
     response = [player_details(p) for p in players]
     session.close()
     return response
+
+
+# E4
+def get_player(player_id):
+    session = Session(engine)
+    player = session.get(Player, player_id)
+    if player is None:
+        session.close()
+        return None
+    response = player_details(player)
+    session.close()
+    return response
