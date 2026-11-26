@@ -17,18 +17,18 @@ The application includes role-based access for admins, organizers and users. Org
 
 | Role | Member | Responsibility |
 |---|---|---|
-| Backend Developer | Member 1 - [Name] | Authentication, admin APIs and repository/deployment setup |
-| Backend Developer | Member 2 - [Name] | Player, tournament and organizer APIs |
-| Backend Developer | Member 3 - [Name] | Fantasy team, contest and leaderboard APIs |
+| Backend Developer | Member 1 - [poojitha] | Authentication, admin APIs and repository/deployment setup |
+| Backend Developer | Member 2 - [adib] | Player, tournament and organizer APIs |
+| Backend Developer | Member 3 - [gokul] | Fantasy team, contest and leaderboard APIs |
 
 
 ### 3-Day Work Plan
 
 | Member | Day 1 | Day 2 | Day 3 |
 |---|---|---|---|
-| Member 1 - [Name] | Set up FastAPI project, SQLite database and modular structure; implement JWT password security | Implement register, login and refresh APIs; implement admin create-organizer API | Complete remaining authentication/admin validation, Docker setup and CI/CD integration |
-| Member 2 - [Name] | Design player and tournament database models; implement role-based authorization | Implement cricket player create/get APIs and tournament create/get APIs | Integrate match data APIs, contest creation and performance publication |
-| Member 3 - [Name] | Design fantasy team, contest and points models | Implement fantasy team create/add/remove/list APIs and contest join API | Implement performance scoring, leaderboard and fantasy points history; test all APIs |
+| Member 1 - [poojitha] | Set up FastAPI project, SQLite database and modular structure; implement JWT password security | Implement register, login and refresh APIs; implement admin create-organizer API | Complete remaining authentication/admin validation, Docker setup and CI/CD integration |
+| Member 2 - [adib] | Design player and tournament database models; implement role-based authorization | Implement cricket player create/get APIs and tournament create/get APIs | Integrate match data APIs, contest creation and performance publication |
+| Member 3 - [gokul] | Design fantasy team, contest and points models | Implement fantasy team create/add/remove/list APIs and contest join API | Implement performance scoring, leaderboard and fantasy points history; test all APIs |
 
 ## 3. Live App
 
