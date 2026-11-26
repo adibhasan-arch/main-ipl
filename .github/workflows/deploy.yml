@@ -9,7 +9,7 @@ jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
     env:
-      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ipl-fantasy
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ipl:v4
       VERSION: v${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
             sudo systemctl enable --now docker
             mkdir -p $HOME/ipl-data
             sudo docker pull ${{ env.IMAGE }}:${{ env.VERSION }}
-            sudo docker rm -f ipl-fantasy || true
-            sudo docker run -d --name ipl-fantasy --restart unless-stopped -p 8001:8001 -v $HOME/ipl-data:/app/data ${{ env.IMAGE }}:${{ env.VERSION }}
+            sudo docker rm -f ipl:v4 || true
+            sudo docker run -d --name ipl:v4 --restart unless-stopped -p 8001:8001 -v $HOME/ipl-data:/app/data ${{ env.IMAGE }}:${{ env.VERSION }}
             sudo docker image prune -af
-            sudo docker ps --filter name=ipl-fantasy
+            sudo docker ps --filter name=ipl:v4
