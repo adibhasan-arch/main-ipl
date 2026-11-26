@@ -185,3 +185,4 @@ def register_User(username, password, user_type="user"):
 # create one admin the first time the app runs (only admin can create organizers)
 register_User(username="admin", password="admin123", user_type="admin")
 
+

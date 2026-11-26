@@ -96,3 +96,4 @@ def refresh_token(refresh_token=Header(None)):
     access_token = function.create_token(user_id=payload["user_id"], token_type="access", user_type=payload["user_type"])
     return {"access_token": access_token}
 
+
