@@ -87,7 +87,7 @@ def login(username=Body(), password=Body()):
     return token
 
 
-# A5
+# A3
 @app.post("/auth/refresh")
 def refresh_token(refresh_token=Header(None)):
     payload = function.verify_token(token=refresh_token, token_type="refresh")
