@@ -155,6 +155,13 @@ def remove_player_from_team(team_id: int, player_id: int, token=Header(None)):
 
     return result
 
+# E10
+@app.get("/teams/me")
+def get_my_teams(token=Header(None)):
+    user = check_role(token, ["user"])
+    return function.get_my_teams(user["user_id"])
+
+
 
 =======
 # E1

@@ -238,6 +238,23 @@ def remove_player_from_team(team_id, player_id, user_id):
     session.close()
     return "Player removed from team"
 
+# E10
+def get_my_teams(user_id):
+    session = Session(engine)
+    response = []
+    teams = session.query(FantasyTeam).filter_by(user_id=user_id).all()
+    for team in teams:
+        players = get_team_players(session, team.id)
+        response.append({
+            "id": team.id,
+            "name": team.name,
+            "match_id": team.match_id,
+            "players": [player_details(p) for p in players]
+        })
+    session.close()
+    return response
+
+
 
 
 
