@@ -87,7 +87,7 @@ def login(username=Body(), password=Body()):
     return token
 
 
-# A3
+# A5
 @app.post("/auth/refresh")
 def refresh_token(refresh_token=Header(None)):
     payload = function.verify_token(token=refresh_token, token_type="refresh")
@@ -95,7 +95,4 @@ def refresh_token(refresh_token=Header(None)):
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
     access_token = function.create_token(user_id=payload["user_id"], token_type="access", user_type=payload["user_type"])
     return {"access_token": access_token}
-
-
-#----------Project APIs-----------
 

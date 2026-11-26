@@ -45,4 +45,3 @@ jobs:
             sudo docker run -d --name ipl-fantasy --restart unless-stopped -p 8001:8001 -v $HOME/ipl-data:/app/data ${{ env.IMAGE }}:${{ env.VERSION }}
             sudo docker image prune -af
             sudo docker ps --filter name=ipl-fantasy
-            
