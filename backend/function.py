@@ -150,36 +150,6 @@ def get_players():
     return response
 
 
-# E4
-def get_player(player_id):
-    session = Session(engine)
-    player = session.get(Player, player_id)
-    if player is None:
-        session.close()
-        return None
-    response = player_details(player)
-    session.close()
-    return response
-
-
-# E5
-def create_tournament(name, season, matches):
-    session = Session(engine)
-    tournament = Tournament(name=name, season=season)
-    session.add(tournament)
-    session.commit()
-    session.refresh(tournament)
-
-    # add the matches of this tournament
-    for m in matches:
-        match = Match(tournament_id=tournament.id, team1=m.team1, team2=m.team2, start_time=m.start_time)
-        session.add(match)
-    session.commit()
-
-    response = {"message": "Tournament created successfully", "tournament_id": tournament.id}
-    session.close()
-    return response
-
 
 #----------Tokens-----------
 
