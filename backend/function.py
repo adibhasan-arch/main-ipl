@@ -123,9 +123,7 @@ def get_team_points(session, team):
             total = total + stats.points
     return total
 
-
 #----------Tokens-----------
-
 def verify_login(username, password):
     session = Session(engine)
     user = session.query(User).filter_by(username=username).first()
