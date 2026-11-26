@@ -186,3 +186,7 @@ def register_User(username, password, user_type="user"):
 register_User(username="admin", password="admin123", user_type="admin")
 
 
+# E1
+def create_organizer(username, password):
+    return register_User(username=username, password=password, user_type="organizer")
+

@@ -97,3 +97,10 @@ def refresh_token(refresh_token=Header(None)):
     return {"access_token": access_token}
 
 
+# E1
+@app.post("/organizers")
+def create_organizer(user: UserIn, token=Header(None)):
+    check_role(token, ["admin"])
+    if function.create_organizer(user.username, user.password):
+        return {"message": "Organizer created successfully"}
+    raise HTTPException(status_code=400, detail="User already exists")
