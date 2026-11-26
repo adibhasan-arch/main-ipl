@@ -7,7 +7,7 @@ from argon2.exceptions import VerifyMismatchError
 
 
 ph = PasswordHasher()
-DB_PATH = "fantasy.db"
+DB_PATH = "data/fantasy.db"
 engine = create_engine(f"sqlite:///{DB_PATH}")
 Base = declarative_base()
 
