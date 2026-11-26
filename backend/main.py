@@ -114,6 +114,48 @@ def create_team(team: TeamCreate, token=Header(None)):
         raise HTTPException(status_code=404, detail="Match not found")
     return result
 
+# E8
+@app.post("/teams/{team_id}/players/{player_id}")
+def add_player_to_team(team_id: int, player_id: int, token=Header(None)):
+    user = check_role(token, ["user"])
+    result = function.add_player_to_team(team_id, player_id, user["user_id"])
+
+    if result == "team_not_found":
+        raise HTTPException(status_code=404, detail="Team not found")
+    if result == "not_your_team":
+        raise HTTPException(status_code=403, detail="This is not your team")
+    if result == "deadline_passed":
+        raise HTTPException(status_code=400, detail="Match deadline has passed")
+    if result == "player_not_found":
+        raise HTTPException(status_code=404, detail="Player not found")
+    if result == "already_added":
+        raise HTTPException(status_code=400, detail="Player already in team")
+    if result == "team_full":
+        raise HTTPException(status_code=400, detail="Team already has 11 players")
+    if result == "role_limit":
+        raise HTTPException(status_code=400, detail="Too many players of this role")
+
+    return result
+
+
+# E9
+@app.delete("/teams/{team_id}/players/{player_id}")
+def remove_player_from_team(team_id: int, player_id: int, token=Header(None)):
+    user = check_role(token, ["user"])
+    result = function.remove_player_from_team(team_id, player_id, user["user_id"])
+
+    if result == "team_not_found":
+        raise HTTPException(status_code=404, detail="Team not found")
+    if result == "not_your_team":
+        raise HTTPException(status_code=403, detail="This is not your team")
+    if result == "deadline_passed":
+        raise HTTPException(status_code=400, detail="Match deadline has passed")
+    if result == "player_not_in_team":
+        raise HTTPException(status_code=404, detail="Player not in team")
+
+    return result
+
+
 =======
 # E1
 @app.post("/organizers")

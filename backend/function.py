@@ -164,9 +164,83 @@ def create_team(name, match_id, user_id):
     session.close()
     return response
 
+# E8
+def add_player_to_team(team_id, player_id, user_id):
+    session = Session(engine)
 
-<<<<<<< HEAD
-=======
+    team = session.get(FantasyTeam, team_id)
+    if team is None:
+        session.close()
+        return "team_not_found"
+    if team.user_id != user_id:
+        session.close()
+        return "not_your_team"
+
+    match = session.get(Match, team.match_id)
+    if datetime.now() > match.start_time:
+        session.close()
+        return "deadline_passed"
+
+    player = session.get(Player, player_id)
+    if player is None:
+        session.close()
+        return "player_not_found"
+
+    already_added = session.query(TeamPlayer).filter_by(team_id=team_id, player_id=player_id).first()
+    if already_added:
+        session.close()
+        return "already_added"
+
+    players = get_team_players(session, team_id)
+    if len(players) >= MAX_PLAYERS:
+        session.close()
+        return "team_full"
+
+    # count players with the same role
+    same_role = 0
+    for p in players:
+        if p.role == player.role:
+            same_role = same_role + 1
+    if same_role >= ROLE_LIMITS[player.role]:
+        session.close()
+        return "role_limit"
+
+    session.add(TeamPlayer(team_id=team_id, player_id=player_id))
+    session.commit()
+    session.close()
+    return "Player added to team"
+
+
+# E9
+def remove_player_from_team(team_id, player_id, user_id):
+    session = Session(engine)
+
+    team = session.get(FantasyTeam, team_id)
+    if team is None:
+        session.close()
+        return "team_not_found"
+    if team.user_id != user_id:
+        session.close()
+        return "not_your_team"
+
+    match = session.get(Match, team.match_id)
+    if datetime.now() > match.start_time:
+        session.close()
+        return "deadline_passed"
+
+    link = session.query(TeamPlayer).filter_by(team_id=team_id, player_id=player_id).first()
+    if link is None:
+        session.close()
+        return "player_not_in_team"
+
+    session.delete(link)
+    session.commit()
+    session.close()
+    return "Player removed from team"
+
+
+
+
 
 #----------Tokens-----------
 
@@ -187,7 +261,6 @@ def verify_login(username, password):
     access_token = create_token(user_id=user_id, token_type="access", user_type=user_type)
     refresh_token = create_token(user_id=user_id, token_type="refresh", user_type=user_type)
     return {"access_token": access_token, "refresh_token": refresh_token, "user_type": user_type}
->>>>>>> 3ba9f846146da02482f43a1611a4cef4781b6631
 
 
 
