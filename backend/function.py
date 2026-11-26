@@ -124,7 +124,114 @@ def get_team_points(session, team):
             total = total + stats.points
     return total
 
+<<<<<<< HEAD
+=======
+
+#----------Tokens-----------
+
+def verify_login(username, password):
+    session = Session(engine)
+    user = session.query(User).filter_by(username=username).first()
+    if user is None:
+        session.close()
+        return False
+    try:
+        ph.verify(user.password, password)
+    except VerifyMismatchError:
+        session.close()
+        return False
+    user_id = user.id
+    user_type = user.user_type
+    session.close()
+    access_token = create_token(user_id=user_id, token_type="access", user_type=user_type)
+    refresh_token = create_token(user_id=user_id, token_type="refresh", user_type=user_type)
+    return {"access_token": access_token, "refresh_token": refresh_token, "user_type": user_type}
+>>>>>>> 3ba9f846146da02482f43a1611a4cef4781b6631
 
 
 
 
+<<<<<<< HEAD
+=======
+def verify_token(token, token_type):
+    try:
+        payload = jwt.decode(jwt=token, key=SECRET_KEY, algorithms=[ALGORITHM])
+    except:
+        return False
+    if payload["token_type"] == token_type:
+        return payload
+    return False
+
+
+# --------Users-------------
+def register_User(username, password, user_type="user"):
+    session = Session(engine)
+    user_exists = session.query(User).filter_by(username=username).first()
+    if user_exists:
+        session.close()
+        return False
+    session.add(User(username=username, password=ph.hash(password), user_type=user_type))
+    session.commit()
+    session.close()
+    return True
+
+
+# create one admin the first time the app runs (only admin can create organizers)
+register_User(username="admin", password="admin123", user_type="admin")
+
+
+# E1
+def create_organizer(username, password):
+    return register_User(username=username, password=password, user_type="organizer")
+
+
+# E2
+def add_player(name, role, team, base_points):
+    session = Session(engine)
+    player = Player(name=name, role=role, team=team, base_points=base_points)
+    session.add(player)
+    session.commit()
+    session.refresh(player)
+    response = player_details(player)
+    session.close()
+    return response
+
+
+# E3
+def get_players():
+    session = Session(engine)
+    players = session.query(Player).all()
+    response = [player_details(p) for p in players]
+    session.close()
+    return response
+
+
+# E4
+def get_player(player_id):
+    session = Session(engine)
+    player = session.get(Player, player_id)
+    if player is None:
+        session.close()
+        return None
+    response = player_details(player)
+    session.close()
+    return response
+
+
+# E5
+def create_tournament(name, season, matches):
+    session = Session(engine)
+    tournament = Tournament(name=name, season=season)
+    session.add(tournament)
+    session.commit()
+    session.refresh(tournament)
+
+    for m in matches:
+        match = Match(tournament_id=tournament.id, team1=m.team1, team2=m.team2, start_time=m.start_time)
+        session.add(match)
+    session.commit()
+
+    response = {"message": "Tournament created successfully", "tournament_id": tournament.id}
+    session.close()
+    return response
+>>>>>>> 3ba9f846146da02482f43a1611a4cef4781b6631

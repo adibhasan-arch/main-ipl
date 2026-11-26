@@ -98,9 +98,53 @@ def refresh_token(refresh_token=Header(None)):
     return {"access_token": access_token}
 
 
+<<<<<<< HEAD
 # E6
 @app.get("/tournaments")
 def get_tournaments(token=Header(None)):
     check_role(token, ALL_ROLES)
     return function.get_tournaments()
 
+=======
+# E1
+@app.post("/organizers")
+def create_organizer(user: UserIn, token=Header(None)):
+    check_role(token, ["admin"])
+    if function.create_organizer(user.username, user.password):
+        return {"message": "Organizer created successfully"}
+    raise HTTPException(status_code=400, detail="User already exists")
+
+
+
+# E2
+@app.post("/players")
+def add_player(player: PlayerCreate, token=Header(None)):
+    check_role(token, ["organizer"])
+    if player.role not in PLAYER_ROLES:
+        raise HTTPException(status_code=400, detail="role must be batsman, bowler, all-rounder or wicketkeeper")
+    return function.add_player(player.name, player.role, player.team, player.base_points)
+
+
+# E3
+@app.get("/players")
+def get_players(token=Header(None)):
+    check_role(token, ALL_ROLES)
+    return function.get_players()
+
+
+# E4
+@app.get("/players/{player_id}")
+def get_player(player_id: int, token=Header(None)):
+    check_role(token, ALL_ROLES)
+    response = function.get_player(player_id)
+    if response is None:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return response
+
+
+# E5
+@app.post("/tournaments")
+def create_tournament(tournament: TournamentCreate, token=Header(None)):
+    check_role(token, ["organizer"])
+    return function.create_tournament(tournament.name, tournament.season, tournament.matches)
+>>>>>>> 3ba9f846146da02482f43a1611a4cef4781b6631

@@ -9,9 +9,7 @@ jobs:
   build-push-deploy:
     runs-on: ubuntu-latest
     env:
-      # Docker Hub image name in the form <dockerhub-username>/<repo-name>, e.g. malnadhudga/todo-list.
-      # The username comes from the DOCKERHUB_USERNAME secret; change "todo-list" to your own repo name.
-      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ipl
+      IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/ipl-fantasy
       VERSION: v${{ github.run_number }}
     steps:
       - uses: actions/checkout@v4
@@ -25,8 +23,8 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: dockerfile
+          context: backend
+          file: backend/dockerfile
           push: true
           tags: |
             ${{ env.IMAGE }}:latest
@@ -41,9 +39,9 @@ jobs:
           script: |
             set -e
             sudo systemctl enable --now docker
-            sudo usermod -aG docker $USER
+            mkdir -p $HOME/ipl-data
             sudo docker pull ${{ env.IMAGE }}:${{ env.VERSION }}
-            sudo docker rm -f ipl || true
-            sudo docker run -d --name ipl--restart unless-stopped -p 8000:8000 ${{ env.IMAGE }}:${{ env.VERSION }}
+            sudo docker rm -f ipl-fantasy || true
+            sudo docker run -d --name ipl-fantasy --restart unless-stopped -p 8001:8001 -v $HOME/ipl-data:/app/data ${{ env.IMAGE }}:${{ env.VERSION }}
             sudo docker image prune -af
-            sudo docker ps --filter name=ipl
+            sudo docker ps --filter name=ipl-fantasy
