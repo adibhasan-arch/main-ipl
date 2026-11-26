@@ -202,3 +202,11 @@ def add_player(name, role, team, base_points):
     session.close()
     return response
 
+
+# E3
+def get_players():
+    session = Session(engine)
+    players = session.query(Player).all()
+    response = [player_details(p) for p in players]
+    session.close()
+    return response

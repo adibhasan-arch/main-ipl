@@ -114,3 +114,10 @@ def add_player(player: PlayerCreate, token=Header(None)):
     if player.role not in PLAYER_ROLES:
         raise HTTPException(status_code=400, detail="role must be batsman, bowler, all-rounder or wicketkeeper")
     return function.add_player(player.name, player.role, player.team, player.base_points)
+
+
+# E3
+@app.get("/players")
+def get_players(token=Header(None)):
+    check_role(token, ALL_ROLES)
+    return function.get_players()
