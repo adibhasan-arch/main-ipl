@@ -123,19 +123,3 @@ def get_players(token=Header(None)):
     check_role(token, ALL_ROLES)
     return function.get_players()
 
-
-# E4
-@app.get("/players/{player_id}")
-def get_player(player_id: int, token=Header(None)):
-    check_role(token, ALL_ROLES)
-    response = function.get_player(player_id)
-    if response is None:
-        raise HTTPException(status_code=404, detail="Player not found")
-    return response
-
-
-# E5
-@app.post("/tournaments")
-def create_tournament(tournament: TournamentCreate, token=Header(None)):
-    check_role(token, ["organizer"])
-    return function.create_tournament(tournament.name, tournament.season, tournament.matches)
