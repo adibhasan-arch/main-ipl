@@ -124,33 +124,6 @@ def get_team_points(session, team):
     return total
 
 
-# E1
-def create_organizer(username, password):
-    return register_User(username=username, password=password, user_type="organizer")
-
-
-# E2
-def add_player(name, role, team, base_points):
-    session = Session(engine)
-    player = Player(name=name, role=role, team=team, base_points=base_points)
-    session.add(player)
-    session.commit()
-    session.refresh(player)
-    response = player_details(player)
-    session.close()
-    return response
-
-
-# E3
-def get_players():
-    session = Session(engine)
-    players = session.query(Player).all()
-    response = [player_details(p) for p in players]
-    session.close()
-    return response
-
-
-
 #----------Tokens-----------
 
 def verify_login(username, password):
@@ -211,3 +184,41 @@ def register_User(username, password, user_type="user"):
 
 # create one admin the first time the app runs (only admin can create organizers)
 register_User(username="admin", password="admin123", user_type="admin")
+
+
+# E1
+def create_organizer(username, password):
+    return register_User(username=username, password=password, user_type="organizer")
+
+
+# E2
+def add_player(name, role, team, base_points):
+    session = Session(engine)
+    player = Player(name=name, role=role, team=team, base_points=base_points)
+    session.add(player)
+    session.commit()
+    session.refresh(player)
+    response = player_details(player)
+    session.close()
+    return response
+
+
+# E3
+def get_players():
+    session = Session(engine)
+    players = session.query(Player).all()
+    response = [player_details(p) for p in players]
+    session.close()
+    return response
+
+
+# E4
+def get_player(player_id):
+    session = Session(engine)
+    player = session.get(Player, player_id)
+    if player is None:
+        session.close()
+        return None
+    response = player_details(player)
+    session.close()
+    return response

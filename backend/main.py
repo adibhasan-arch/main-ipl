@@ -97,8 +97,6 @@ def refresh_token(refresh_token=Header(None)):
     return {"access_token": access_token}
 
 
-#----------Project APIs-----------
-
 # E1
 @app.post("/organizers")
 def create_organizer(user: UserIn, token=Header(None)):
@@ -106,6 +104,7 @@ def create_organizer(user: UserIn, token=Header(None)):
     if function.create_organizer(user.username, user.password):
         return {"message": "Organizer created successfully"}
     raise HTTPException(status_code=400, detail="User already exists")
+
 
 
 # E2
@@ -123,3 +122,11 @@ def get_players(token=Header(None)):
     check_role(token, ALL_ROLES)
     return function.get_players()
 
+# E4
+@app.get("/players/{player_id}")
+def get_player(player_id: int, token=Header(None)):
+    check_role(token, ALL_ROLES)
+    response = function.get_player(player_id)
+    if response is None:
+        raise HTTPException(status_code=404, detail="Player not found")
+    return response
