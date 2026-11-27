@@ -106,3 +106,22 @@ def create_contest(contest: ContestCreate, token=Header(None)):
     if result == "match_not_found":
         raise HTTPException(status_code=404, detail="Match not found")
     return result
+
+# E12
+@app.post("/contests/{contest_id}/join")
+def join_contest(contest_id: int, body: JoinContest, token=Header(None)):
+    user = check_role(token, ["user"])
+    result = function.join_contest(contest_id, body.team_id, user["user_id"])
+
+    if result == "contest_not_found":
+        raise HTTPException(status_code=404, detail="Contest not found")
+    if result == "team_not_found":
+        raise HTTPException(status_code=404, detail="Team not found")
+    if result == "not_your_team":
+        raise HTTPException(status_code=403, detail="This is not your team")
+    if result == "different_match":
+        raise HTTPException(status_code=400, detail="Team is for a different match")
+    if result == "already_joined":
+        raise HTTPException(status_code=400, detail="Team already joined this contest")
+
+    return result

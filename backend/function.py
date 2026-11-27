@@ -140,6 +140,37 @@ def create_contest(name, match_id):
     session.close()
     return response
 
+
+# E12
+def join_contest(contest_id, team_id, user_id):
+    session = Session(engine)
+
+    contest = session.get(Contest, contest_id)
+    if contest is None:
+        session.close()
+        return "contest_not_found"
+
+    team = session.get(FantasyTeam, team_id)
+    if team is None:
+        session.close()
+        return "team_not_found"
+    if team.user_id != user_id:
+        session.close()
+        return "not_your_team"
+    if team.match_id != contest.match_id:
+        session.close()
+        return "different_match"
+
+    already_joined = session.query(ContestEntry).filter_by(contest_id=contest_id, team_id=team_id).first()
+    if already_joined:
+        session.close()
+        return "already_joined"
+
+    session.add(ContestEntry(contest_id=contest_id, team_id=team_id, user_id=user_id))
+    session.commit()
+    session.close()
+    return "Joined contest successfully"
+
 #----------Tokens-----------
 
 def verify_login(username, password):
