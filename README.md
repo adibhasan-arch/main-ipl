@@ -34,10 +34,9 @@ The application includes role-based access for admins, organizers and users. Org
 
 | Item | URL |
 |---|---|
-| API | http://[EC2-PUBLIC-IP]:8001 |
-| Swagger Documentation | http://[EC2-PUBLIC-IP]:8001/docs |
-| Docker Hub Image | [Docker Hub repository/image] |
-| GitHub Repository | [GitHub repository URL] |
+| API | http://54.82.84.235:8001 |
+| Swagger Documentation | http://54.82.84.235:8001/docs |
+| GitHub Repository | [https://github.com/adibhasan-arch/main-ipl.git] |
 
 ## 4. How to Run It
 
