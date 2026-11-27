@@ -210,6 +210,42 @@ def publish_stats(match_id, stats_list):
     session.commit()
     session.close()
     return response
+
+
+# E14
+def get_leaderboard(contest_id):
+    session = Session(engine)
+
+    contest = session.get(Contest, contest_id)
+    if contest is None:
+        session.close()
+        return None
+
+    board = []
+    entries = session.query(ContestEntry).filter_by(contest_id=contest_id).all()
+    for entry in entries:
+        team = session.get(FantasyTeam, entry.team_id)
+        user = session.get(User, entry.user_id)
+        points = get_team_points(session, team)
+        board.append({"username": user.username, "team": team.name, "points": points})
+
+    # highest points first
+    board.sort(key=sort_by_points, reverse=True)
+
+    rank = 1
+    for row in board:
+        row["rank"] = rank
+        rank = rank + 1
+
+    session.close()
+    return board
+
+
+def sort_by_points(row):
+    return row["points"]
+
+
+
 #----------Tokens-----------
 
 def verify_login(username, password):

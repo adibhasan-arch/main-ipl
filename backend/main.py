@@ -140,3 +140,13 @@ def publish_stats(match_id: int, stats: list[PlayerStats], token=Header(None)):
         raise HTTPException(status_code=404, detail="Player not found")
 
     return result
+
+
+# E14
+@app.get("/contests/{contest_id}/leaderboard")
+def get_leaderboard(contest_id: int, token=Header(None)):
+    check_role(token, ALL_ROLES)
+    response = function.get_leaderboard(contest_id)
+    if response is None:
+        raise HTTPException(status_code=404, detail="Contest not found")
+    return response
