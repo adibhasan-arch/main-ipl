@@ -239,6 +239,139 @@ def create_tournament(name, season, matches):
     session.close()
     return response
 
+# E6
+def get_tournaments():
+    session = Session(engine)
+    response = []
+    tournaments = session.query(Tournament).all()
+    for t in tournaments:
+        matches = session.query(Match).filter_by(tournament_id=t.id).all()
+        match_list = []
+        for m in matches:
+            match_list.append({
+                "id": m.id,
+                "team1": m.team1,
+                "team2": m.team2,
+                "start_time": str(m.start_time)
+            })
+        response.append({
+            "id": t.id,
+            "name": t.name,
+            "season": t.season,
+            "matches": match_list
+        })
+    session.close()
+    return response
+
+
+# E7
+def create_team(name, match_id, user_id):
+    session = Session(engine)
+    match = session.get(Match, match_id)
+    if match is None:
+        session.close()
+        return "match_not_found"
+    team = FantasyTeam(name=name, match_id=match_id, user_id=user_id)
+    session.add(team)
+    session.commit()
+    session.refresh(team)
+    response = {"message": "Team created successfully", "team_id": team.id}
+    session.close()
+    return response
+
+
+# E8
+def add_player_to_team(team_id, player_id, user_id):
+    session = Session(engine)
+
+    team = session.get(FantasyTeam, team_id)
+    if team is None:
+        session.close()
+        return "team_not_found"
+    if team.user_id != user_id:
+        session.close()
+        return "not_your_team"
+
+    match = session.get(Match, team.match_id)
+    if datetime.now() > match.start_time:
+        session.close()
+        return "deadline_passed"
+
+    player = session.get(Player, player_id)
+    if player is None:
+        session.close()
+        return "player_not_found"
+
+    already_added = session.query(TeamPlayer).filter_by(team_id=team_id, player_id=player_id).first()
+    if already_added:
+        session.close()
+        return "already_added"
+
+    players = get_team_players(session, team_id)
+    if len(players) >= MAX_PLAYERS:
+        session.close()
+        return "team_full"
+
+    # count players with the same role
+    same_role = 0
+    for p in players:
+        if p.role == player.role:
+            same_role = same_role + 1
+    if same_role >= ROLE_LIMITS[player.role]:
+        session.close()
+        return "role_limit"
+
+    session.add(TeamPlayer(team_id=team_id, player_id=player_id))
+    session.commit()
+    session.close()
+    return "Player added to team"
+
+
+# E9
+def remove_player_from_team(team_id, player_id, user_id):
+    session = Session(engine)
+
+    team = session.get(FantasyTeam, team_id)
+    if team is None:
+        session.close()
+        return "team_not_found"
+    if team.user_id != user_id:
+        session.close()
+        return "not_your_team"
+
+    match = session.get(Match, team.match_id)
+    if datetime.now() > match.start_time:
+        session.close()
+        return "deadline_passed"
+
+    link = session.query(TeamPlayer).filter_by(team_id=team_id, player_id=player_id).first()
+    if link is None:
+        session.close()
+        return "player_not_in_team"
+
+    session.delete(link)
+    session.commit()
+    session.close()
+    return "Player removed from team"
+
+
+# E10
+def get_my_teams(user_id):
+    session = Session(engine)
+    response = []
+    teams = session.query(FantasyTeam).filter_by(user_id=user_id).all()
+    for team in teams:
+        players = get_team_players(session, team.id)
+        response.append({
+            "id": team.id,
+            "name": team.name,
+            "match_id": team.match_id,
+            "players": [player_details(p) for p in players]
+        })
+    session.close()
+    return response
+
+
 # E11
 def create_contest(name, match_id):
     session = Session(engine)
