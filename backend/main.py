@@ -150,3 +150,10 @@ def get_leaderboard(contest_id: int, token=Header(None)):
     if response is None:
         raise HTTPException(status_code=404, detail="Contest not found")
     return response
+
+
+# E15
+@app.get("/users/me/points")
+def get_points_history(token=Header(None)):
+    user = check_role(token, ["user"])
+    return function.get_points_history(user["user_id"])

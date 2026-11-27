@@ -245,6 +245,19 @@ def sort_by_points(row):
     return row["points"]
 
 
+# E15
+def get_points_history(user_id):
+    session = Session(engine)
+    history = []
+    entries = session.query(ContestEntry).filter_by(user_id=user_id).all()
+    for entry in entries:
+        contest = session.get(Contest, entry.contest_id)
+        team = session.get(FantasyTeam, entry.team_id)
+        points = get_team_points(session, team)
+        history.append({"contest": contest.name, "team": team.name, "points": points})
+    session.close()
+    return history
+
 
 #----------Tokens-----------
 
