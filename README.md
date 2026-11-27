@@ -17,9 +17,9 @@ The application includes role-based access for admins, organizers and users. Org
 
 | Role | Member | Responsibility |
 |---|---|---|
-| Backend Developer | Member 1 - [poojitha] | Authentication, admin APIs and repository/deployment setup |
-| Backend Developer | Member 2 - [adib] | Player, tournament and organizer APIs |
-| Backend Developer | Member 3 - [gokul] | Fantasy team, contest and leaderboard APIs |
+| Backend Developer | Member 1 - [poojitha] | Authentication, E1-E5 endpoints and creating docker image and docker repo. |
+| Backend Developer | Member 2 - [adib] | E6-E10 and AWS connecting |
+| Backend Developer | Member 3 - [gokul] | E11-E15 endpoints |
 
 
 ### 3-Day Work Plan
