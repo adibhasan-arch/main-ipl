@@ -125,3 +125,18 @@ def join_contest(contest_id: int, body: JoinContest, token=Header(None)):
         raise HTTPException(status_code=400, detail="Team already joined this contest")
 
     return result
+
+
+
+# E13
+@app.post("/matches/{match_id}/stats")
+def publish_stats(match_id: int, stats: list[PlayerStats], token=Header(None)):
+    check_role(token, ["organizer"])
+    result = function.publish_stats(match_id, stats)
+
+    if result == "match_not_found":
+        raise HTTPException(status_code=404, detail="Match not found")
+    if result == "player_not_found":
+        raise HTTPException(status_code=404, detail="Player not found")
+
+    return result

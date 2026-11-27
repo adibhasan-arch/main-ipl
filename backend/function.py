@@ -171,6 +171,45 @@ def join_contest(contest_id, team_id, user_id):
     session.close()
     return "Joined contest successfully"
 
+
+# E13
+def publish_stats(match_id, stats_list):
+    session = Session(engine)
+
+    match = session.get(Match, match_id)
+    if match is None:
+        session.close()
+        return "match_not_found"
+
+    response = []
+    for s in stats_list:
+        player = session.get(Player, s.player_id)
+        if player is None:
+            session.close()
+            return "player_not_found"
+
+        # calculate fantasy points
+        points = 0
+        points = points + s.runs * 1
+        points = points + s.fours * 1
+        points = points + s.sixes * 2
+        points = points + s.wickets * 25
+        points = points + s.catches * 8
+        points = points + s.run_outs * 12
+        points = points + s.stumpings * 12
+
+        # if stats were already published for this player, update them
+        stats = session.query(PlayerStats).filter_by(match_id=match_id, player_id=s.player_id).first()
+        if stats is None:
+            stats = PlayerStats(match_id=match_id, player_id=s.player_id)
+            session.add(stats)
+        stats.points = points
+
+        response.append({"player_id": s.player_id, "points": points})
+
+    session.commit()
+    session.close()
+    return response
 #----------Tokens-----------
 
 def verify_login(username, password):
