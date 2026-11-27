@@ -1,4 +1,3 @@
-main.py
 from fastapi import FastAPI, HTTPException, Header, Body
 from datetime import datetime
 from pydantic import BaseModel, Field
