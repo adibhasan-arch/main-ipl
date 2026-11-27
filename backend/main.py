@@ -1,4 +1,4 @@
-
+main.py
 from fastapi import FastAPI, HTTPException, Header, Body
 from datetime import datetime
 from pydantic import BaseModel, Field
@@ -98,111 +98,11 @@ def refresh_token(refresh_token=Header(None)):
     return {"access_token": access_token}
 
 
-<<<<<<< HEAD
-# E6
-@app.get("/tournaments")
-def get_tournaments(token=Header(None)):
-    check_role(token, ALL_ROLES)
-    return function.get_tournaments()
-
-# E7
-@app.post("/teams")
-def create_team(team: TeamCreate, token=Header(None)):
-    user = check_role(token, ["user"])
-    result = function.create_team(team.name, team.match_id, user["user_id"])
+# E11
+@app.post("/contests")
+def create_contest(contest: ContestCreate, token=Header(None)):
+    check_role(token, ["organizer"])
+    result = function.create_contest(contest.name, contest.match_id)
     if result == "match_not_found":
         raise HTTPException(status_code=404, detail="Match not found")
     return result
-
-# E8
-@app.post("/teams/{team_id}/players/{player_id}")
-def add_player_to_team(team_id: int, player_id: int, token=Header(None)):
-    user = check_role(token, ["user"])
-    result = function.add_player_to_team(team_id, player_id, user["user_id"])
-
-    if result == "team_not_found":
-        raise HTTPException(status_code=404, detail="Team not found")
-    if result == "not_your_team":
-        raise HTTPException(status_code=403, detail="This is not your team")
-    if result == "deadline_passed":
-        raise HTTPException(status_code=400, detail="Match deadline has passed")
-    if result == "player_not_found":
-        raise HTTPException(status_code=404, detail="Player not found")
-    if result == "already_added":
-        raise HTTPException(status_code=400, detail="Player already in team")
-    if result == "team_full":
-        raise HTTPException(status_code=400, detail="Team already has 11 players")
-    if result == "role_limit":
-        raise HTTPException(status_code=400, detail="Too many players of this role")
-
-    return result
-
-
-# E9
-@app.delete("/teams/{team_id}/players/{player_id}")
-def remove_player_from_team(team_id: int, player_id: int, token=Header(None)):
-    user = check_role(token, ["user"])
-    result = function.remove_player_from_team(team_id, player_id, user["user_id"])
-
-    if result == "team_not_found":
-        raise HTTPException(status_code=404, detail="Team not found")
-    if result == "not_your_team":
-        raise HTTPException(status_code=403, detail="This is not your team")
-    if result == "deadline_passed":
-        raise HTTPException(status_code=400, detail="Match deadline has passed")
-    if result == "player_not_in_team":
-        raise HTTPException(status_code=404, detail="Player not in team")
-
-    return result
-
-# E10
-@app.get("/teams/me")
-def get_my_teams(token=Header(None)):
-    user = check_role(token, ["user"])
-    return function.get_my_teams(user["user_id"])
-
-
-
-=======
-# E1
-@app.post("/organizers")
-def create_organizer(user: UserIn, token=Header(None)):
-    check_role(token, ["admin"])
-    if function.create_organizer(user.username, user.password):
-        return {"message": "Organizer created successfully"}
-    raise HTTPException(status_code=400, detail="User already exists")
-
-
-
-# E2
-@app.post("/players")
-def add_player(player: PlayerCreate, token=Header(None)):
-    check_role(token, ["organizer"])
-    if player.role not in PLAYER_ROLES:
-        raise HTTPException(status_code=400, detail="role must be batsman, bowler, all-rounder or wicketkeeper")
-    return function.add_player(player.name, player.role, player.team, player.base_points)
-
-
-# E3
-@app.get("/players")
-def get_players(token=Header(None)):
-    check_role(token, ALL_ROLES)
-    return function.get_players()
-
-
-# E4
-@app.get("/players/{player_id}")
-def get_player(player_id: int, token=Header(None)):
-    check_role(token, ALL_ROLES)
-    response = function.get_player(player_id)
-    if response is None:
-        raise HTTPException(status_code=404, detail="Player not found")
-    return response
-
-
-# E5
-@app.post("/tournaments")
-def create_tournament(tournament: TournamentCreate, token=Header(None)):
-    check_role(token, ["organizer"])
-    return function.create_tournament(tournament.name, tournament.season, tournament.matches)
->>>>>>> 3ba9f846146da02482f43a1611a4cef4781b6631
